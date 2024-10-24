@@ -26,4 +26,4 @@ gradle buildPlugin
 
 ##  XCoder后端服务部署
 
-[`XCoder后端服务开源地址`](https://github.com/)
+[`XCoder后端服务开源地址`](https://github.com/FinVolution/XCoder-Server)
