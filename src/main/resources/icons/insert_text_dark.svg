@@ -1,0 +1,12 @@
+<svg width="24" height="12" xmlns="http://www.w3.org/2000/svg">
+    <title>copy</title>
+    <defs>
+        <filter id="svg_2_blur">
+            <feGaussianBlur stdDeviation="0" in="SourceGraphic"/>
+        </filter>
+    </defs>
+    <g>
+        <title>Layer 1</title>
+        <text filter="url(#svg_2_blur)" font-weight="normal" xml:space="preserve" text-anchor="start" font-family="'Alegreya'" font-size="12" id="svg_2" y="10.02515" x="-0.00076" stroke-width="0" stroke="#000" fill="#3592C4">插入</text>
+    </g>
+</svg>

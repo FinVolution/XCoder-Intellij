@@ -1,0 +1,8 @@
+<idea-plugin>
+    <depends>com.intellij.modules.lang</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <codeInsight.inlayProvider language="go" implementationClass="com.ppdai.bicoder.chat.hints.GoChatMethodHintProvider"/>
+    </extensions>
+
+</idea-plugin>

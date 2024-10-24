@@ -1,0 +1,8 @@
+<idea-plugin>
+    <depends>com.intellij.modules.lang</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <codeInsight.inlayProvider language="Python" implementationClass="com.ppdai.bicoder.chat.hints.PythonChatMethodHintProvider"/>
+    </extensions>
+
+</idea-plugin>

@@ -1,0 +1,133 @@
+<idea-plugin require-restart="true">
+    <id>com.open.xcoder</id>
+    <name>Open-XCoder</name>
+    <vendor email="" url="">Open-XCoder</vendor>
+
+    <resource-bundle>messages.bicoder</resource-bundle>
+    <change-notes>
+        <![CDATA[
+        <h3>1.0.0</h3>
+        <ul>
+            <li>开源版初始化</li>
+        </ul>
+        ]]>
+    </change-notes>
+    <description><![CDATA[
+        <h2>智能编码助手介绍</h2>
+        <br/>
+        <ul>
+            <li>行级/函数级实时续写</li>
+            <li>自然语言生成代码</li>
+            <li>输入指令优化代码</li>
+            <li>单元测试生成</li>
+            <li>解释代码</li>
+            <li>生成文档</li>
+            <li>生成注释</li>
+            <li>优化代码</li>
+            <li>编码问题问答</li>
+        </ul>
+        ]]></description>
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends optional="true" config-file="plugin-java.xml">com.intellij.java</depends>
+    <depends optional="true" config-file="plugin-python.xml">com.intellij.modules.python</depends>
+    <depends optional="true" config-file="plugin-go.xml">org.jetbrains.plugins.go</depends>
+    <depends>org.intellij.plugins.markdown</depends>
+
+    <!--记录对照关系
+        plugin:1.13.3 jdk :11 gradle:7.2 203-221.*
+        plugin:1.13.3 jdk :17 gradle:8.3 222-231.*-->
+    <!--    <idea-version since-build="2020.3" until-build="2022.1.4"/>-->
+    <idea-version since-build="2022.2" until-build="2024.1"/>
+
+    <projectListeners>
+        <listener class="com.ppdai.bicoder.listeners.MyProjectManagerListener"
+                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
+        <listener topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"
+                  class="com.ppdai.bicoder.listeners.BiCoderEditorChangeListener"/>
+    </projectListeners>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="com.ppdai.bicoder.service.BiCoderService"/>
+        <applicationService serviceImplementation="com.ppdai.bicoder.service.StateService"/>
+        <applicationService serviceImplementation="com.ppdai.bicoder.handler.BiCoderCompletionHandler"/>
+
+        <postStartupActivity implementation="com.ppdai.bicoder.listeners.MyPluginManagerListener"/>
+        <editorFactoryDocumentListener implementation="com.ppdai.bicoder.listeners.BiCoderDocumentListener"/>
+        <editorActionHandler action="EditorEscape" implementationClass="com.ppdai.bicoder.handler.EscapeHandler"
+                             id="previewEscape"/>
+        <applicationService serviceImplementation="com.ppdai.bicoder.config.UserSetting"/>
+
+        <projectService serviceImplementation="com.ppdai.bicoder.chat.conversation.ConversationsStorage"/>
+        <projectService serviceImplementation="com.ppdai.bicoder.chat.conversation.ConversationService"/>
+        <projectService serviceImplementation="com.ppdai.bicoder.config.UserProjectSetting"/>
+
+        <projectService serviceImplementation="com.ppdai.bicoder.cache.ProjectCache"/>
+
+        <statusBarWidgetFactory implementation="com.ppdai.bicoder.menu.BiCoderStatusBarWidgetFactory"
+                                order="before positionWidget" id="BiCoderStatusBarWidgetFactory"/>
+        <!-- settings -->
+        <applicationConfigurable groupId="other" id="BiCoderConfigurable" key="plugin.name"
+                                 instance="com.ppdai.bicoder.menu.BiCoderConfigurable"/>
+        <projectConfigurable groupId="BiCoderConfigurable" id="BiCoderProjectConfigurable"
+                             key="plugin.setting.project.configurable.title"
+                             instance="com.ppdai.bicoder.menu.BiCoderProjectConfigurable"/>
+
+        <toolWindow id="XCoder Chat"
+                    anchor="right"
+                    icon="/icons/toolWindowIcon.svg"
+                    factoryClass="com.ppdai.bicoder.chat.BiCoderToolWindowFactory"/>
+        <!-- 自定义diff扩展 -->
+        <diff.DiffExtension implementation="com.ppdai.bicoder.chat.edit.MyEditExtension"/>
+        <diff.DiffExtension implementation="com.ppdai.bicoder.chat.tests.MyTestsSchemaExtension"/>
+        <diff.DiffExtension implementation="com.ppdai.bicoder.chat.diff.MyBaseDiffExtension"/>
+    </extensions>
+
+    <actions>
+        <!-- 用户接受操作,默认为按TAB键 -->
+        <action class="com.ppdai.bicoder.actions.AcceptCompletionAction"
+                id="AcceptCompletionAction" text="Accept Completion">
+            <keyboard-shortcut first-keystroke="TAB" keymap="$default"/>
+        </action>
+        <action class="com.ppdai.bicoder.chat.actions.SelectContextFile"
+                id="BiCoder.SelectContextFile" text="Select Context File">
+        </action>
+        <action class="com.ppdai.bicoder.chat.actions.SearchContext"
+                id="BiCoder.SearchContext" text="Search Context">
+        </action>
+        <action class="com.ppdai.bicoder.chat.actions.EditCode"
+                id="BiCoder.EditCode" text="Edit Code">
+        </action>
+
+
+        <group id="BiCoderActions" popup="true" text="XCoder" description="XCoder"
+               icon="/icons/toolWindowIcon.svg">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <action id="BiCoder.StartInlineChat" class="com.ppdai.bicoder.chat.actions.StartInlineChat"
+                    text="Start Inline Chat">
+                <keyboard-shortcut first-keystroke="alt I" keymap="$default"/>
+            </action>
+            <separator/>
+            <action id="BiCoder.GenerateTests" class="com.ppdai.bicoder.chat.actions.GenerateTests"
+                    text="Generate Tests">
+            </action>
+            <action id="BiCoder.ExplainCode" class="com.ppdai.bicoder.chat.actions.ExplainCode" text="Explain Code">
+            </action>
+            <action id="BiCoder.GenerateDoc" class="com.ppdai.bicoder.chat.actions.GenerateDoc" text="Generate Doc">
+            </action>
+            <action id="BiCoder.OptimizeCode" class="com.ppdai.bicoder.chat.actions.OptimizeCode" text="Optimize Code">
+            </action>
+            <separator/>
+            <action id="BiCoder.AddFileChatContent" class="com.ppdai.bicoder.chat.actions.AddFileChatContext"
+                    text="Add Selected Code to Chat Context">
+                <keyboard-shortcut first-keystroke="alt D" keymap="$default"/>
+            </action>
+            <action class="com.ppdai.bicoder.chat.actions.StartEditCode"
+                    id="BiCoder.StartEditCode" text="Start Edit Code">
+                <keyboard-shortcut first-keystroke="alt O" keymap="$default"/>
+            </action>
+        </group>
+    </actions>
+</idea-plugin>
